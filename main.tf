@@ -26,3 +26,23 @@ resource "aws_lambda_function" "this" {
   filename         = "${path.module}/dist/${var.semantic_version}/bootstrap.zip"
   source_code_hash = filebase64sha256("${path.module}/dist/${var.semantic_version}/bootstrap.zip")
 }
+
+# add a trigger to the lambda function to run it every 5 minutes
+resource "aws_cloudwatch_event_rule" "this" {
+  name                = "idp-scim-sync"
+  description         = "This rule will trigger the Lambda function every 5 minutes."
+  schedule_expression = var.schedule_expression
+}
+
+resource "aws_cloudwatch_event_target" "this" {
+  rule = aws_cloudwatch_event_rule.this.name
+  arn  = aws_lambda_function.this.arn
+}
+
+resource "aws_lambda_permission" "this" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.this.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.this.arn
+}
