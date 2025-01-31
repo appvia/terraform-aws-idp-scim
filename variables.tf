@@ -81,22 +81,11 @@ variable "log_group_name" {
   description = "The name of the CloudWatch log group"
   default     = "/aws/lambda/idp-scim-sync"
 }
-variable "runtime" {
-  type        = string
-  description = "The Lambda function runtime"
-  default     = "provided.al2"
-}
 
 variable "architecture" {
   type        = string
   description = "The Lambda function architecture"
   default     = "arm64"
-}
-
-variable "lambda_function_handler" {
-  type        = string
-  description = "The Lambda function handler"
-  default     = "bootstrap"
 }
 
 variable "lambda_function_name" {

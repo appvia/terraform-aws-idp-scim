@@ -1,11 +1,12 @@
 resource "aws_lambda_function" "this" {
   function_name = var.lambda_function_name
   description   = "This Lambda function will sync the AWS SSO groups and users with the Google Workspace directory."
-  runtime       = var.runtime
+  runtime       = "provided.al2"
   memory_size   = var.memory_size
   timeout       = var.timeout
-  handler       = var.lambda_function_handler
+  handler       = "bootstrap"
   role          = aws_iam_role.lambda.arn
+  architectures = ["arm64"]
 
   environment {
     variables = {
@@ -22,6 +23,6 @@ resource "aws_lambda_function" "this" {
     }
   }
 
-  filename         = "${path.module}/dist/${var.semantic_version}/idpscim-linux-arm64.zip"
-  source_code_hash = filebase64sha256("${path.module}/dist/${var.semantic_version}/idpscim-linux-arm64.zip")
+  filename         = "${path.module}/dist/${var.semantic_version}/bootstrap.zip"
+  source_code_hash = filebase64sha256("${path.module}/dist/${var.semantic_version}/bootstrap.zip")
 }
