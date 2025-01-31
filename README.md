@@ -14,7 +14,6 @@ This module is based off of [slashdevops/idp-scim-sync](https://github.com/slash
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_semantic_version"></a> [semantic\_version](#input\_semantic\_version) | The semantic version of the module | `string` | n/a | yes |
-| <a name="input_architecture"></a> [architecture](#input\_architecture) | The Lambda function architecture | `string` | `"arm64"` | no |
 | <a name="input_bucket_name_prefix"></a> [bucket\_name\_prefix](#input\_bucket\_name\_prefix) | Prefix used in the bucket name where the state data will be stored. | `string` | `"idp-scim-sync-state"` | no |
 | <a name="input_gws_groups_filter"></a> [gws\_groups\_filter](#input\_gws\_groups\_filter) | The Google Workspace group filter query parameter | `string` | `""` | no |
 | <a name="input_gws_service_account_file_secret_name"></a> [gws\_service\_account\_file\_secret\_name](#input\_gws\_service\_account\_file\_secret\_name) | The Google Workspace credentials file secret name | `string` | `"IDPSCIM_GWSServiceAccountFile"` | no |
