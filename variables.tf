@@ -82,12 +82,6 @@ variable "log_group_name" {
   default     = "/aws/lambda/idp-scim-sync"
 }
 
-variable "architecture" {
-  type        = string
-  description = "The Lambda function architecture"
-  default     = "arm64"
-}
-
 variable "lambda_function_name" {
   type        = string
   description = "Name of the created Lambda function"
