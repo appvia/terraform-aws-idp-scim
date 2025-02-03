@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
       "kms:Encrypt",
       "kms:Decrypt",
       "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
+      "kms:Generate*",
       "kms:DescribeKey"
     ]
     resources = ["*"]

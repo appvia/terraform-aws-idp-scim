@@ -55,7 +55,7 @@ variable "scim_access_token_secret_name" {
 variable "gws_groups_filter" {
   type        = string
   description = "The Google Workspace group filter query parameter"
-  default     = ""
+  default     = "Name:Cloud*" # Default filter to get all groups that start with 'Cloud'
 }
 
 variable "sync_method" {
