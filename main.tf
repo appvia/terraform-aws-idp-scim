@@ -2,11 +2,15 @@
 locals {
   ## List of secrets to provision with secret manager
   secrets = {
-    "gws-service_account" = format("%s-gws-service-account", var.name),
-    "gws-username"        = format("%s-gws-username", var.name),
-    "scim-endpoint"       = format("%s-scim-endpoint", var.name),
-    "scim-token"          = format("%s-scim-token", var.name),
+    "endpoint"       = format("%s-scim-endpoint", var.name),
+    "service_account" = format("%s-gws-service-account", var.name),
+    "token"          = format("%s-scim-token", var.name),
+    "username"        = format("%s-gws-username", var.name),
   }
+  ## 
+  secret_arns = [
+    for secret in aws_secretsmanager_secret.secrets : secret.arn
+  ]
 }
 
 ## Craft an IAM policy document for the Lambda function
@@ -45,9 +49,7 @@ data "aws_iam_policy_document" "lambda" {
     actions = [
       "secretsmanager:GetSecretValue",
     ]
-    resources = [
-      for secret in local.secrets : aws_secretsmanager_secret.secrets[secret].arn
-    ]
+    resources = local.secret_arns
   }
 }
 
@@ -75,6 +77,15 @@ module "log_bucket" {
   force_destroy                         = true
   tags                                  = var.tags
 
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm     = "aws:kms"
+        kms_master_key_id = module.kms.key_id
+      }
+    }
+  }
+
   versioning = {
     enabled = true
   }
@@ -98,7 +109,14 @@ module "kms" {
     lambda = {
       name              = format("%s-lambda-grant", var.name)
       grantee_principal = format("arn:aws:iam::%s:root", local.account_id)
-      operations        = ["Decrypt", "DescribeKey", "Encrypt", "Generate*", "ReEncrypt*"]
+      operations        = [
+        "Decrypt", 
+        "DescribeKey", 
+        "Encrypt", 
+        "GenerateDataKey", 
+        "ReEncryptFrom",
+        "ReEncryptTo",
+      ]
       constraints = [
         {
           encryption_context_subset = {
@@ -133,11 +151,11 @@ module "lambda_function" {
   environment_variables = {
     IDPSCIM_AWS_S3_BUCKET_KEY                    = var.state_file_key
     IDPSCIM_AWS_S3_BUCKET_NAME                   = module.log_bucket.s3_bucket_id
-    IDPSCIM_AWS_SCIM_ACCESS_TOKEN_SECRET_NAME    = aws_secretsmanager_secret.secrets["scm-token"].arn
-    IDPSCIM_AWS_SCIM_ENDPOINT_SECRET_NAME        = aws_secretsmanager_secret.secrets["scm-endpoint"].arn
+    IDPSCIM_AWS_SCIM_ACCESS_TOKEN_SECRET_NAME    = aws_secretsmanager_secret.secrets["token"].arn
+    IDPSCIM_AWS_SCIM_ENDPOINT_SECRET_NAME        = aws_secretsmanager_secret.secrets["endpoint"].arn
     IDPSCIM_GWS_GROUPS_FILTER                    = var.groups_filter
-    IDPSCIM_GWS_SERVICE_ACCOUNT_FILE_SECRET_NAME = aws_secretsmanager_secret.secrets["gws-service_account"].arn
-    IDPSCIM_GWS_USER_EMAIL_SECRET_NAME           = aws_secretsmanager_secret.secrets["gws-username"].arn
+    IDPSCIM_GWS_SERVICE_ACCOUNT_FILE_SECRET_NAME = aws_secretsmanager_secret.secrets["service_account"].arn
+    IDPSCIM_GWS_USER_EMAIL_SECRET_NAME           = aws_secretsmanager_secret.secrets["username"].arn
     IDPSCIM_LOG_FORMAT                           = "json"
     IDPSCIM_LOG_LEVEL                            = var.log_level
     IDPSCIM_SYNC_METHOD                          = var.sync_method
