@@ -2,10 +2,22 @@
 locals {
   ## List of secrets to provision with secret manager
   secrets = {
-    "endpoint"       = format("%s-scim-endpoint", var.name),
-    "service_account" = format("%s-gws-service-account", var.name),
-    "token"          = format("%s-scim-token", var.name),
-    "username"        = format("%s-gws-username", var.name),
+    "service_account" = {
+      name        = format("%s-gws-service-account", var.name)
+      description = "The secret that contains the Google Workspace service account credentials for the SCIM sync Lambda function"
+    },
+    "username" = {
+      name        = format("%s-gws-username", var.name)
+      description = "The secret that contains the Google Workspace service account email for the SCIM sync Lambda function"
+    },
+    "endpoint" = {
+      name        = format("%s-scim-endpoint", var.name)
+      description = "The secret that contains the AWS SSO SCIM endpoint for the SCIM sync Lambda function"
+    },
+    "scm-token" = {
+      name        = format("%s-scim-token", var.name)
+      description = "The secret that contains the AWS SSO SCIM access token for the SCIM sync Lambda function"
+    },
   }
   ## 
   secret_arns = [
@@ -58,8 +70,9 @@ data "aws_iam_policy_document" "lambda" {
 resource "aws_secretsmanager_secret" "secrets" {
   for_each = local.secrets
 
-  name = each.value
-  tags = var.tags
+  name        = each.value.name
+  description = each.value.description
+  tags        = var.tags
 }
 
 ## Provision the bucket for the Lambda function to store the SCIM sync state, with server-side encryption using the KMS key we created
@@ -109,11 +122,11 @@ module "kms" {
     lambda = {
       name              = format("%s-lambda-grant", var.name)
       grantee_principal = format("arn:aws:iam::%s:root", local.account_id)
-      operations        = [
-        "Decrypt", 
-        "DescribeKey", 
-        "Encrypt", 
-        "GenerateDataKey", 
+      operations = [
+        "Decrypt",
+        "DescribeKey",
+        "Encrypt",
+        "GenerateDataKey",
         "ReEncryptFrom",
         "ReEncryptTo",
       ]
