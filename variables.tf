@@ -12,43 +12,13 @@ variable "log_level" {
   default     = "info"
 }
 
-variable "log_format" {
-  type        = string
-  description = "Log format for Lambda function logging"
-  default     = "json"
-}
-
 variable "state_file_key" {
   type        = string
   description = "The key 'file' where the state data will be stored"
   default     = "data/state.json"
 }
 
-variable "gws_service_account_file_secret_name" {
-  type        = string
-  description = "The Google Workspace credentials file secret name"
-  default     = "IDPSCIM_GWSServiceAccountFile"
-}
-
-variable "gws_user_email_secret_name" {
-  type        = string
-  description = "The Google Workspace user email secret name"
-  default     = "IDPSCIM_GWSUserEmail"
-}
-
-variable "scim_endpoint_secret_name" {
-  type        = string
-  description = "The AWS SSO SCIM Endpoint Url secret name"
-  default     = "IDPSCIM_SCIMEndpoint"
-}
-
-variable "scim_access_token_secret_name" {
-  type        = string
-  description = "The AWS SSO SCIM AccessToken secret name"
-  default     = "IDPSCIM_SCIMAccessToken"
-}
-
-variable "gws_groups_filter" {
+variable "groups_filter" {
   type        = string
   description = "The Google Workspace group filter query parameter"
   default     = "Name:Cloud*" # Default filter to get all groups that start with 'Cloud'
@@ -60,28 +30,46 @@ variable "sync_method" {
   default     = "groups"
 }
 
-variable "memory_size" {
+variable "cloudwatch_logs_kms_key_id" {
+  type        = string
+  description = "The ID of the KMS key to use for encrypting CloudWatch Logs"
+  default     = null
+}
+
+variable "cloudwatch_logs_retention_in_days" {
+  type        = number
+  description = "The number of days to retain CloudWatch Logs"
+  default     = 7
+}
+
+variable "cloudwatch_logs_class" {
+  type        = string
+  description = "The class of CloudWatch Logs log group to create (e.g. standard or infrequent access)"
+  default     = "standard"
+}
+
+variable "lambda_runtime" {
+  type        = string
+  description = "The runtime environment for the Lambda function."
+  default     = "provided.al2"
+}
+
+variable "lambda_timeout" {
+  type        = number
+  description = "The amount of time (in seconds) that the Lambda function has to run before it is terminated."
+  default     = 300
+}
+
+variable "lambda_memory_size" {
   type        = number
   description = "The amount of memory to allocate to the Lambda function."
   default     = 256
-}
-
-variable "timeout" {
-  type        = number
-  description = "The amount of time that AWS Lambda service allows a function to run before terminating it."
-  default     = 300
 }
 
 variable "name" {
   type        = string
   description = "Name of the created Lambda function"
   default     = "lz-idp-scim"
-}
-
-variable "log_group_retention_days" {
-  type        = number
-  description = "The number of days you want to keep logs for the lambda function"
-  default     = 7
 }
 
 variable "tags" {
@@ -93,6 +81,8 @@ variable "tags" {
 variable "semantic_version" {
   type        = string
   description = "The semantic version of the module"
+  default     = "0.30.1"
+
   validation {
     condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.semantic_version))
     error_message = "The semantic version must be in the format 'x.y.z'"
