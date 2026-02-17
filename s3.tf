@@ -1,40 +1,5 @@
-resource "aws_s3_bucket" "this" {
-  bucket = "${var.bucket_name_prefix}-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
 
-  lifecycle {
-    prevent_destroy = true
-  }
-
-  tags = var.tags
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
-  bucket = aws_s3_bucket.this.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.this.arn
-      sse_algorithm     = "aws:kms"
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "this" {
-  bucket = aws_s3_bucket.this.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket_versioning" "this" {
-  bucket = aws_s3_bucket.this.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
+## Craft the IAM policy for the bucket policy
 data "aws_iam_policy_document" "bucket_policy" {
   statement {
     effect = "Allow"
@@ -51,6 +16,48 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 }
 
+## Provision an S3 bucket to store the SCIM sync state, with server-side encryption using the KMS key we created
+resource "aws_s3_bucket" "this" {
+  bucket = format("%s-%s-%s", var.name, local.account_id, local.region)
+  tags   = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+## Provision the server-side encryption configuration for the S3 bucket
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.this.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+## Provision the public access block configuration for the S3 bucket
+resource "aws_s3_bucket_public_access_block" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+## Provision the versioning configuration for the S3 bucket
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+
+## Provision the bucket policy for the S3 bucket
 resource "aws_s3_bucket_policy" "this" {
   bucket = aws_s3_bucket.this.id
   policy = data.aws_iam_policy_document.bucket_policy.json

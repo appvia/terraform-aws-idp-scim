@@ -1,3 +1,5 @@
+
+
 variable "schedule_expression" {
   type        = string
   description = "Schedule for trigger the execution of idp-scim-sync (see EventBridge rule schedule expressions)"
@@ -14,12 +16,6 @@ variable "log_format" {
   type        = string
   description = "Log format for Lambda function logging"
   default     = "json"
-}
-
-variable "bucket_name_prefix" {
-  type        = string
-  description = "Prefix used in the bucket name where the state data will be stored."
-  default     = "idp-scim-sync-state"
 }
 
 variable "state_file_key" {
@@ -76,16 +72,10 @@ variable "timeout" {
   default     = 300
 }
 
-variable "log_group_name" {
-  type        = string
-  description = "The name of the CloudWatch log group"
-  default     = "/aws/lambda/idp-scim-sync"
-}
-
-variable "lambda_function_name" {
+variable "name" {
   type        = string
   description = "Name of the created Lambda function"
-  default     = "idp-scim-sync"
+  default     = "lz-idp-scim"
 }
 
 variable "log_group_retention_days" {
