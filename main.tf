@@ -14,7 +14,7 @@ locals {
       name        = format("%s-scim-endpoint", var.name)
       description = "The secret that contains the AWS SSO SCIM endpoint for the SCIM sync Lambda function"
     },
-    "scm-token" = {
+    "token" = {
       name        = format("%s-scim-token", var.name)
       description = "The secret that contains the AWS SSO SCIM access token for the SCIM sync Lambda function"
     },
