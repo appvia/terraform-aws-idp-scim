@@ -20,10 +20,6 @@ data "aws_iam_policy_document" "bucket_policy" {
 resource "aws_s3_bucket" "this" {
   bucket = format("%s-%s-%s", var.name, local.account_id, local.region)
   tags   = var.tags
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 ## Provision the server-side encryption configuration for the S3 bucket
