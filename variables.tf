@@ -45,7 +45,7 @@ variable "cloudwatch_logs_retention_in_days" {
 variable "cloudwatch_logs_class" {
   type        = string
   description = "The class of CloudWatch Logs log group to create (e.g. standard or infrequent access)"
-  default     = "standard"
+  default     = "STANDARD"
 }
 
 variable "lambda_runtime" {

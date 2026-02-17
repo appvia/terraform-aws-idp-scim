@@ -13,7 +13,7 @@ This module is based off of [slashdevops/idp-scim-sync](https://github.com/slash
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_cloudwatch_logs_class"></a> [cloudwatch\_logs\_class](#input\_cloudwatch\_logs\_class) | The class of CloudWatch Logs log group to create (e.g. standard or infrequent access) | `string` | `"standard"` | no |
+| <a name="input_cloudwatch_logs_class"></a> [cloudwatch\_logs\_class](#input\_cloudwatch\_logs\_class) | The class of CloudWatch Logs log group to create (e.g. standard or infrequent access) | `string` | `"STANDARD"` | no |
 | <a name="input_cloudwatch_logs_kms_key_id"></a> [cloudwatch\_logs\_kms\_key\_id](#input\_cloudwatch\_logs\_kms\_key\_id) | The ID of the KMS key to use for encrypting CloudWatch Logs | `string` | `null` | no |
 | <a name="input_cloudwatch_logs_retention_in_days"></a> [cloudwatch\_logs\_retention\_in\_days](#input\_cloudwatch\_logs\_retention\_in\_days) | The number of days to retain CloudWatch Logs | `number` | `7` | no |
 | <a name="input_groups_filter"></a> [groups\_filter](#input\_groups\_filter) | The Google Workspace group filter query parameter | `string` | `"Name:Cloud*"` | no |
