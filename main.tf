@@ -144,7 +144,7 @@ module "kms" {
 ## Lambda function that used to handle the SCIM sync between AWS SSO and Google Workspace
 module "lambda_function" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "8.2.0"
+  version = "8.8.0"
 
   architectures                = ["arm64"]
   function_name                = var.name
