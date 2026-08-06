@@ -78,7 +78,7 @@ resource "aws_secretsmanager_secret" "secrets" {
 ## Provision the bucket for the Lambda function to store the SCIM sync state, with server-side encryption using the KMS key we created
 module "log_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.10.0"
+  version = "5.15.4"
 
   allowed_kms_key_arn                   = module.kms.key_arn
   attach_access_log_delivery_policy     = true
