@@ -107,7 +107,7 @@ module "log_bucket" {
 ## Provision the KMS key and alias for encrypting the S3 bucket
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "4.2.0"
+  version = "4.2.1"
 
   aliases                 = [var.name]
   deletion_window_in_days = 30
